@@ -1,0 +1,28 @@
+# Ignore compiled files
+*.o
+*.out
+
+# Ignore temporary files
+*~
+
+# Ignore log files
+*.log
+
+# Ignore build directories
+/build
+/dist
+
+# Ignore dependencies
+/node_modules
+/vendor
+
+# Ignore IDE-specific files
+.idea/
+.vscode/
+
+# Ignore system-specific files
+.DS_Store
+Thumbs.db
+
+.conventionalcommits/
+bin/
