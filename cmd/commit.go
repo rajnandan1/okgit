@@ -1,16 +1,14 @@
 package cmd
 
 import (
-	"bufio"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 
 	"github.com/fatih/color"
+	"github.com/rajnandan1/okgit/models"
+	"github.com/rajnandan1/okgit/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -29,37 +27,6 @@ var commitTypes = []string{
 	"others",
 }
 
-type ShellCommands struct {
-	Name      string
-	Arguments []string
-}
-
-var shellCommands = map[string]ShellCommands{
-	"currentBranch": {
-		Name:      "git",
-		Arguments: []string{"branch", "--show-current"},
-	},
-	"gitCommit": {
-		Name:      "git",
-		Arguments: []string{"commit", "-F", "-"},
-	},
-}
-
-type Commit struct {
-	Type            string
-	Scope           string
-	Summary         string
-	Details         string
-	BreakingChange  bool
-	BreakingMessage string
-	Footer          string
-}
-
-const (
-	directoryName = ".conventionalcommits"
-	fileName      = "branches.json"
-)
-
 // commitCmd represents the commit command
 var commitCmd = &cobra.Command{
 	Use:   "commit",
@@ -71,19 +38,19 @@ var commitCmd = &cobra.Command{
 		fgCyan := color.New(color.FgCyan)
 		fgGray := color.New(color.FgBlack)
 
-		myCommit := Commit{}
+		myCommit := models.Commit{}
 
 		//Get the last commit if available
 
-		currentBranch := shellCommands["currentBranch"]
+		gitBranch := models.AllCommands["gitBranch"]
 
-		branch, err := exec.Command(currentBranch.Name, currentBranch.Arguments...).Output()
+		branch, err := exec.Command(gitBranch.Name, gitBranch.Arguments...).Output()
 		if err != nil {
 			color.Red("Is it a git repo? Error getting current branch")
 			return
 		}
 		branch = branch[:len(branch)-1]
-		if storedCommit, err := getLastCommitForBranchFromFile(string(branch)); err == nil {
+		if storedCommit, err := utils.GetLastCommitForBranchFromFile(string(branch)); err == nil {
 			myCommit = *storedCommit
 		}
 		if myCommit.Type == "" {
@@ -96,7 +63,7 @@ var commitCmd = &cobra.Command{
 			fgGray.Print(myCommit.Type + " ")
 		}
 
-		commitTypeInput := readInput(false)
+		commitTypeInput := utils.ReadInput(false)
 		if commitTypeInput == "" && myCommit.Type == "" {
 			color.Red("Commit type is required.")
 			return
@@ -113,10 +80,12 @@ var commitCmd = &cobra.Command{
 		// Ask for the commit scope
 		fgCyan.Print("[Optional] Scope: ")
 		if myCommit.Scope != "" {
-			fgGray.Print(myCommit.Scope + " ")
+			fgGray.Print(myCommit.Scope + " (enter . to remove me)")
 		}
-		commitScope := readInput(false)
-		if commitScope != "" {
+		commitScope := utils.ReadInput(false)
+		if commitScope == "." {
+			myCommit.Scope = ""
+		} else if commitScope != "" {
 			myCommit.Scope = commitScope
 		}
 
@@ -126,22 +95,26 @@ var commitCmd = &cobra.Command{
 			fgGray.Println(myCommit.Summary)
 		}
 
-		commitSummaryInput := readInput(false)
-		if commitSummaryInput == "" && myCommit.Summary == "" {
-			color.Red("Commit summary is required.")
-			return
-		}
+		commitSummaryInput := utils.ReadInput(false)
+
 		if commitSummaryInput != "" {
 			myCommit.Summary = commitSummaryInput
+		}
+
+		if myCommit.Summary == "" {
+			color.Red("Commit summary is required.")
+			return
 		}
 
 		// Ask for the commit message
 		fgCyan.Println("[Optional] Details: ")
 		if myCommit.Details != "" {
-			fgGray.Println(myCommit.Details)
+			fgGray.Println(myCommit.Details + " (enter . to remove me)")
 		}
-		commitDetailsInput := readInput(false)
-		if commitDetailsInput != "" {
+		commitDetailsInput := utils.ReadInput(false)
+		if commitDetailsInput == "." {
+			myCommit.Details = ""
+		} else if commitDetailsInput != "" {
 			myCommit.Details = commitDetailsInput
 		}
 
@@ -153,7 +126,7 @@ var commitCmd = &cobra.Command{
 			fgGray.Print("n ")
 		}
 
-		breakingChangeInput := readInput(false)
+		breakingChangeInput := utils.ReadInput(false)
 		if breakingChangeInput != "" {
 			if strings.ToLower(breakingChangeInput) == "y" {
 				myCommit.BreakingChange = true
@@ -165,11 +138,13 @@ var commitCmd = &cobra.Command{
 		if myCommit.BreakingChange {
 			fgCyan.Println("[Optional] What is breaking?")
 			if myCommit.BreakingMessage != "" {
-				fgGray.Println(myCommit.BreakingMessage)
+				fgGray.Println(myCommit.BreakingMessage + " (enter . to remove me)")
 			}
-			breakingMessageInput := readInput(false)
+			breakingMessageInput := utils.ReadInput(false)
 
-			if breakingMessageInput != "" {
+			if breakingMessageInput == "." {
+				myCommit.BreakingMessage = ""
+			} else if breakingMessageInput != "" {
 				myCommit.BreakingMessage = breakingMessageInput
 			}
 		}
@@ -178,8 +153,10 @@ var commitCmd = &cobra.Command{
 		if myCommit.Footer != "" {
 			fgGray.Println(myCommit.Footer)
 		}
-		footerInput := readInput(false)
-		if footerInput != "" {
+		footerInput := utils.ReadInput(false)
+		if footerInput == "." {
+			myCommit.Footer = ""
+		} else if footerInput != "" {
 			myCommit.Footer = footerInput
 		}
 
@@ -187,28 +164,29 @@ var commitCmd = &cobra.Command{
 
 		fmt.Println("Generated commit message:")
 		fmt.Println(commit)
-		createDirectoryAndFileIfNotExist()
-		err = addCommitToBranchFile(string(branch), myCommit)
+		utils.CreateDirectoryAndFileIfNotExist()
+		err = utils.AddCommitToBranchFile(string(branch), myCommit)
 		if err != nil {
 			color.Red("Error adding commit to branch file:", err)
 			return
 		}
 
-		gitCommit := shellCommands["gitCommit"]
+		gitCommit := models.AllCommands["gitCommit"]
 		xmd := exec.Command(gitCommit.Name, gitCommit.Arguments...)
 		xmd.Stdout = os.Stdout
 		xmd.Stderr = os.Stderr
 		xmd.Stdin = strings.NewReader(commit)
 		xmderr := xmd.Run()
-		if xmderr != nil {
-			color.Red("Error committing the changes:", xmderr)
-			return
+		if xmderr == nil {
+			color.Green("✔ Committed changes successfully")
+		} else {
+			color.Red("⨯ Error committing changes")
 		}
 
 	},
 }
 
-func generateCommit(cmt Commit) string {
+func generateCommit(cmt models.Commit) string {
 
 	commitType := cmt.Type
 	commitScope := cmt.Scope
@@ -270,148 +248,4 @@ func getCommitTypeFromBranchName(branchName string) string {
 	}
 
 	return ""
-}
-
-func createDirectoryAndFileIfNotExist() error {
-
-	currentDir, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-
-	directoryPath := filepath.Join(currentDir, directoryName)
-	filePath := filepath.Join(directoryPath, fileName)
-
-	// Check if the directory already exists
-	if _, err := os.Stat(directoryPath); os.IsNotExist(err) {
-		// Directory does not exist, create it
-		err := os.MkdirAll(directoryPath, 0755)
-		if err != nil {
-			return err
-		}
-	}
-
-	// Check if the file already exists
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-
-		err = ioutil.WriteFile(filePath, []byte("{}"), 0644)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func readBranchesFile() (map[string][]Commit, error) {
-
-	currentDir, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-
-	filePath := filepath.Join(currentDir, directoryName, fileName)
-
-	// Check if the file exists
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		return nil, fmt.Errorf("file " + directoryName + "/" + fileName + " does not exist")
-	}
-
-	// Read the file
-	data, err := os.ReadFile(filePath)
-	if err != nil {
-		return nil, err
-	}
-
-	// Unmarshal JSON data into branches slice
-	var branches map[string][]Commit
-
-	err = json.Unmarshal(data, &branches)
-	if err != nil {
-		return nil, err
-	}
-
-	// Create the map of commits
-
-	return branches, nil
-}
-
-func addCommitToBranchFile(branchName string, cmt Commit) error {
-	branches, err := readBranchesFile()
-	if err != nil {
-		return err
-	}
-
-	commits, ok := branches[branchName]
-	if !ok {
-		commits = []Commit{}
-	}
-
-	commits = append(commits, cmt)
-	branches[branchName] = commits
-
-	// Marshal the branches map into JSON
-	data, err := json.Marshal(branches)
-	if err != nil {
-		return err
-	}
-
-	currentDir, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-
-	filePath := filepath.Join(currentDir, directoryName, fileName)
-
-	// Write the data to the file
-	err = os.WriteFile(filePath, data, 0644)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func getLastCommitForBranchFromFile(branchName string) (*Commit, error) {
-	branches, err := readBranchesFile()
-	if err != nil {
-		return nil, err
-	}
-
-	commits, ok := branches[branchName]
-	if !ok {
-		return nil, fmt.Errorf("branch " + branchName + " does not exist")
-	}
-
-	return &commits[len(commits)-1], nil
-
-}
-
-func readInput(multi bool) string {
-	reader := bufio.NewReader(os.Stdin)
-
-	if !multi {
-		input, _ := reader.ReadString('\n')
-		input = strings.TrimSpace(input)
-		return input
-	}
-
-	var lines []string
-	for {
-		line, _ := reader.ReadString('\n')
-
-		// Remove the newline character from the end
-		line = strings.TrimSuffix(line, "\n")
-
-		// Check if the line is empty (only Enter was pressed)
-		if line == "" {
-			break
-		}
-
-		lines = append(lines, line)
-	}
-
-	input := strings.Join(lines, "\n")
-	input = strings.TrimSpace(input)
-	return input
 }
