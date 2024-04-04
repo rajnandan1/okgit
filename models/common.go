@@ -14,6 +14,10 @@ type ShellCommands struct {
 	Arguments []string
 }
 
+const (
+	LINE = "------------------------------------------------"
+)
+
 var AllCommands = map[string]ShellCommands{
 	"gitBranch": {
 		Name:      "git",

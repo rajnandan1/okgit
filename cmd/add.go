@@ -24,9 +24,9 @@ var addCmd = &cobra.Command{
 		xmd.Stdout = os.Stdout
 		xmd.Stderr = os.Stderr
 		if xmd.Run() == nil {
-			color.Green("✔ Staged files successfully")
+			color.Green(models.LINE)
 		} else {
-			color.Red("⨯ Error staging files")
+			color.Red(models.LINE)
 		}
 	},
 }

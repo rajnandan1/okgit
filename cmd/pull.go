@@ -20,9 +20,9 @@ var pullCmd = &cobra.Command{
 		xmd.Stdout = os.Stdout
 		xmd.Stderr = os.Stderr
 		if xmd.Run() == nil {
-			color.Green("✔ Pulled changes successfully")
+			color.Green(models.LINE)
 		} else {
-			color.Red("⨯ Error pulling changes")
+			color.Red(models.LINE)
 		}
 	},
 }
