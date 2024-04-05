@@ -10,9 +10,9 @@ import (
 )
 
 var syncCmd = &cobra.Command{
-	Use:   "sync",
+	Use:   "sn",
 	Short: "Sync local branch with remote from -> to",
-	Long:  "Sync local branch with remote from -> to. if to is not given it will sync the current branch",
+	Long:  "Sync local branch with remote from -> to. if to is not given it will sync the current branch. Example usage: okgit sync fromBranchName toBranchName",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
 			color.Red("Please provide the branch name to sync with")

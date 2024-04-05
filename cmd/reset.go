@@ -10,9 +10,9 @@ import (
 )
 
 var resetCmd = &cobra.Command{
-	Use:   "reset",
-	Short: "Reset changes in the working directory",
-	Long:  "Reset changes in the working directory by providing the file names as arguments. Similar to `git reset`.",
+	Use:   "rs",
+	Short: "Reset changes in the working directory. Similar to `git reset`",
+	Long:  "Reset changes in the working directory by providing the file names as arguments. Similar to `git reset`. Example usage: okgit rs ",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		gitReset := models.AllCommands["gitReset"]

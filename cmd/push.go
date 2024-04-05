@@ -10,9 +10,9 @@ import (
 )
 
 var pushCmd = &cobra.Command{
-	Use:   "push",
-	Short: "Push local branch changes to remote",
-	Long:  "Push local branch changes to remote. Similar to `git push`",
+	Use:   "ps",
+	Short: "Push local branch changes to remote. Similar to `git push`",
+	Long:  "Push local branch changes to remote. Similar to `git push`. Example usage: okgit ps",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		gitPush := models.AllCommands["gitPush"]

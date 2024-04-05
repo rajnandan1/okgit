@@ -10,9 +10,9 @@ import (
 )
 
 var addCmd = &cobra.Command{
-	Use:   "add",
-	Short: "Stage files for commit",
-	Long:  "Stage files for commit by providing the file names as arguments. Similar to `git add`.",
+	Use:   "ad",
+	Short: "Stage files for commit. Similar to `git add`",
+	Long:  "Stage files for commit by providing the file names as arguments. Similar to `git add`. Example: okgit ad file1 file2 / okgit ad . to stage all files",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
 			//push .

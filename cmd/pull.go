@@ -10,9 +10,9 @@ import (
 )
 
 var pullCmd = &cobra.Command{
-	Use:   "pull",
+	Use:   "pl",
 	Short: "Pull remote branch changes",
-	Long:  "Pull remote branch changes. Similar to `git pull`",
+	Long:  "Pull remote branch changes. Similar to `git pull`. Example usage: okgit pl",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		gitPull := models.AllCommands["gitPull"]

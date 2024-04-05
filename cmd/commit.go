@@ -29,9 +29,9 @@ var commitTypes = []string{
 
 // commitCmd represents the commit command
 var commitCmd = &cobra.Command{
-	Use:   "commit",
-	Short: "Create a conventional commit",
-	Long:  `Create a conventional commit message by providing the necessary details.`,
+	Use:   "cm",
+	Short: "Create a conventional commit. Similar to `git commit`",
+	Long:  `Create a conventional commit message by providing the necessary details. Example usage: okgit cm`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// Get the current branch
