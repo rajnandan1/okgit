@@ -1,5 +1,5 @@
 /*
-Copyright © 2024 NAME HERE <rajnandan1@gmail.com>
+Copyright © 2024 Raj Nandan Sharma rajnandan1@gmail.com
 */
 package cmd
 
