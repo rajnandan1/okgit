@@ -1,5 +1,6 @@
 # okgit
 
+![okgit1](https://github.com/rajnandan1/okgit/assets/16224367/53af6415-11cb-4bb1-aaaa-28b9dce0102a)
 
 ## Inspiration
 I wanted to write conventional commit messages but I was too lazy to write them manually. So I created this tool to help me write conventional commits.
