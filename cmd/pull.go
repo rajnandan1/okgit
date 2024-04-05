@@ -11,7 +11,7 @@ import (
 
 var pullCmd = &cobra.Command{
 	Use:   "pl",
-	Short: "Pull remote branch changes",
+	Short: "Pull remote branch changes. Similar to `git pull`",
 	Long:  "Pull remote branch changes. Similar to `git pull`. Example usage: okgit pl",
 	Run: func(cmd *cobra.Command, args []string) {
 

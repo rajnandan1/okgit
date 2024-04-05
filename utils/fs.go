@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	directoryName = ".conventionalcommits"
+	directoryName = ".okgit"
 	fileName      = "branches.json"
 )
 

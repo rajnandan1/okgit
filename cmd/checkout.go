@@ -12,7 +12,7 @@ import (
 var checkoutCmd = &cobra.Command{
 	Use:   "ch",
 	Short: "Switch branches or restore working tree files. Similar to `git checkout`",
-	Long:  "Switch branches or restore working tree files. Similar to `git checkout`. Example usage: okgit checkout branchName / okgit checkout file1 file2 / okgit checkout . to checkout all files",
+	Long:  "Switch branches or restore working tree files. Similar to `git checkout`. Example usage: okgit ch branchName / okgit ch file1 file2 / okgit ch . to ch all files",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if len(args) == 0 {
