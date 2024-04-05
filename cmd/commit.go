@@ -178,9 +178,9 @@ var commitCmd = &cobra.Command{
 		xmd.Stdin = strings.NewReader(commit)
 		xmderr := xmd.Run()
 		if xmderr == nil {
-			color.Green(models.LINE)
+			color.Green("✔ Committed changes successfully")
 		} else {
-			color.Red(models.LINE)
+			color.Red("⨯ Error committing changes")
 		}
 
 	},

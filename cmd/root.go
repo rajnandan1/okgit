@@ -11,9 +11,9 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "commitmsg",
+	Use:   "okgit",
 	Short: "Generate Conventional Commits",
-	Long:  `commitmsg is a CLI tool that helps you generate conventional commits as specified by the Conventional Commits specification.`,
+	Long:  `okgit is a CLI tool that helps you generate conventional commits as specified by the Conventional Commits specification. Plus other git chores`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
@@ -33,7 +33,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.commitmsg.yaml)")
+	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.okgit.yaml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.

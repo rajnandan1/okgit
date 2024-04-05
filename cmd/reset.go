@@ -20,9 +20,9 @@ var resetCmd = &cobra.Command{
 		xmd.Stdout = os.Stdout
 		xmd.Stderr = os.Stderr
 		if xmd.Run() == nil {
-			color.Green(models.LINE)
+			color.Green("✔ Reset changes successfully")
 		} else {
-			color.Red(models.LINE)
+			color.Red("⨯ Error resetting changes")
 		}
 	},
 }

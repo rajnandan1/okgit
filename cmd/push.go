@@ -20,9 +20,9 @@ var pushCmd = &cobra.Command{
 		xmd.Stdout = os.Stdout
 		xmd.Stderr = os.Stderr
 		if xmd.Run() == nil {
-			color.Green(models.LINE)
+			color.Green("✔ Pushed changes successfully")
 		} else {
-			color.Red(models.LINE)
+			color.Red("⨯ Error pushing changes")
 		}
 	},
 }

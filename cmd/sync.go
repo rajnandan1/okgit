@@ -99,9 +99,9 @@ var syncCmd = &cobra.Command{
 		if xmd.Run() != nil {
 			color.Red("Error in merging the branch %s with %s", fromBranch, toBranch)
 			return
+		} else {
+			color.Green("✔ Synced the branch %s with %s successfully", fromBranch, toBranch)
 		}
-
-		color.Green(models.LINE)
 
 	},
 }
