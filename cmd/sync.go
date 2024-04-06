@@ -26,7 +26,7 @@ var syncCmd = &cobra.Command{
 			color.Red("Is it a git repo?")
 			return
 		}
-		toBranch := string(data)
+		toBranch := string(data[:len(data)-1])
 		if len(args) >= 2 {
 			args = append(args, args[0])
 			toBranch = args[1]
