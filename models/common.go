@@ -23,6 +23,10 @@ var AllCommands = map[string]ShellCommands{
 		Name:      "git",
 		Arguments: []string{"branch", "--show-current"},
 	},
+	"gitFetchBranch": {
+		Name:      "git",
+		Arguments: []string{"branch", "--list"},
+	},
 	"gitCommit": {
 		Name:      "git",
 		Arguments: []string{"commit", "-F", "-"},
@@ -54,5 +58,9 @@ var AllCommands = map[string]ShellCommands{
 	"gitMerge": {
 		Name:      "git",
 		Arguments: []string{"merge"},
+	},
+	"createBranch": {
+		Name:      "git",
+		Arguments: []string{"branch"},
 	},
 }

@@ -23,13 +23,6 @@ var branchCmd = &cobra.Command{
 		branch = branch[:len(branch)-1]
 		color.Green("Current branch: %s", branch)
 
-		// xmd.Stdout = os.Stdout
-		// xmd.Stderr = os.Stderr
-		// if xmd.Run() == nil {
-		// 	color.Green("✔ Pulled changes successfully")
-		// } else {
-		// 	color.Red("⨯ Error pulling changes")
-		// }
 	},
 }
 
