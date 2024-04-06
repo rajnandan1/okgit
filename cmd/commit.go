@@ -242,7 +242,7 @@ func getCommitTypeFromBranchName(branchName string) string {
 	}
 
 	for _, commitType := range commitTypes {
-		if strings.HasPrefix(branchName, commitType) {
+		if strings.Contains(branchName, commitType) {
 			return commitType
 		}
 	}

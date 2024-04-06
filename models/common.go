@@ -41,7 +41,7 @@ var AllCommands = map[string]ShellCommands{
 	},
 	"gitPull": {
 		Name:      "git",
-		Arguments: []string{"pull", "origin", "$(git symbolic-ref --short HEAD)"},
+		Arguments: []string{"pull", "origin"},
 	},
 	"gitStatus": {
 		Name:      "git",

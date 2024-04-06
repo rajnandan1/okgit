@@ -27,3 +27,9 @@ Update you `.gitignore` file to ignore the `.okgit` directory.
 ```
 echo ".okgit/" >> .gitignore
 ```
+
+## Run locally without install
+
+```bash
+go build -o bin ./... &&  ./bin/okgit cm
+```

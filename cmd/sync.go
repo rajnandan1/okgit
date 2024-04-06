@@ -59,6 +59,7 @@ var syncCmd = &cobra.Command{
 		//now pull changes from remote
 		color.Yellow("Pulling the branch %s", fromBranch)
 		gitPull := models.AllCommands["gitPull"]
+		gitPull.Arguments = append(gitPull.Arguments, fromBranch)
 		xmd = exec.Command(gitPull.Name, gitPull.Arguments...)
 		xmd.Stdout = os.Stdout
 		xmd.Stderr = os.Stderr
@@ -81,6 +82,7 @@ var syncCmd = &cobra.Command{
 
 		//now pull changes from remote
 		color.Yellow("Pulling the branch %s", toBranch)
+		gitPull.Arguments = []string{"pull", toBranch}
 		xmd = exec.Command(gitPull.Name, gitPull.Arguments...)
 		xmd.Stdout = os.Stdout
 		xmd.Stderr = os.Stderr

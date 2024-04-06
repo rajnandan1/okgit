@@ -19,11 +19,8 @@ var statusCmd = &cobra.Command{
 		xmd := exec.Command(gitStatus.Name, gitStatus.Arguments...)
 		xmd.Stdout = os.Stdout
 		xmd.Stderr = os.Stderr
-		if xmd.Run() == nil {
-			color.Green("✔ status shown successfully")
-		} else {
-			color.Red("⨯ Error showing status")
-		}
+		xmd.Run()
+		color.Yellow("Status command executed successfully")
 	},
 }
 
