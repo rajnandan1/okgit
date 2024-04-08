@@ -82,7 +82,7 @@ var syncCmd = &cobra.Command{
 
 		//now pull changes from remote
 		color.Yellow("Pulling the branch %s", toBranch)
-		gitPull.Arguments = []string{"pull", toBranch}
+		gitPull.Arguments = []string{"pull", "origin", toBranch}
 		xmd = exec.Command(gitPull.Name, gitPull.Arguments...)
 		xmd.Stdout = os.Stdout
 		xmd.Stderr = os.Stderr
