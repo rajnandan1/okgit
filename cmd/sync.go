@@ -1,11 +1,10 @@
 package cmd
 
 import (
-	"os"
-	"os/exec"
+	"errors"
 
-	"github.com/fatih/color"
 	"github.com/rajnandan1/okgit/models"
+	"github.com/rajnandan1/okgit/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -15,18 +14,16 @@ var syncCmd = &cobra.Command{
 	Long:  "Sync local branch with remote from -> to. if to is not given it will sync the current branch. Example usage: okgit sync fromBranchName toBranchName",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
-			color.Red("Please provide the branch name to sync with")
-			return
+			utils.LogFatal(errors.New("Please provide the branch name to sync with"))
 		}
 		fromBranch := args[0]
 
 		gitBranch := models.AllCommands["gitBranch"]
-		data, err := exec.Command(gitBranch.Name, gitBranch.Arguments...).Output()
-		if err != nil {
-			color.Red("Is it a git repo?")
-			return
+
+		toBranch, cmdErr := utils.RunCommand(gitBranch.Name, gitBranch.Arguments, "")
+		if cmdErr != nil {
+			utils.LogFatal(cmdErr)
 		}
-		toBranch := string(data[:len(data)-1])
 		if len(args) >= 2 {
 			args = append(args, args[0])
 			toBranch = args[1]
@@ -34,76 +31,56 @@ var syncCmd = &cobra.Command{
 
 		//check if unstaged or uncommit files are there in toBranch
 		gitStatus := models.AllCommands["gitStatus"]
-		data, err = exec.Command(gitStatus.Name, gitStatus.Arguments...).Output()
-		if err != nil {
-			color.Red("Is it a git repo?")
-			return
+		cmdOut, cmdErr := utils.RunCommand(gitStatus.Name, gitStatus.Arguments, "")
+		if cmdErr != nil {
+			utils.LogFatal(cmdErr)
 		}
-		if len(data) > 0 {
-			color.Red("Please commit or stash the changes in the branch %s", toBranch)
-			return
+		if len(cmdOut) > 0 {
+			utils.LogFatal(errors.New("Please commit or stash the changes in the branch " + toBranch))
 		}
-
+		utils.LogOutput(cmdOut)
 		//now checkout fromBranch
-		color.Yellow("Checking out the branch %s", fromBranch)
 		gitCheckout := models.AllCommands["gitCheckout"]
 		gitCheckout.Arguments = append(gitCheckout.Arguments, fromBranch)
-		xmd := exec.Command(gitCheckout.Name, gitCheckout.Arguments...)
-		xmd.Stdout = os.Stdout
-		xmd.Stderr = os.Stderr
-		if xmd.Run() != nil {
-			color.Red("Error in checking out the branch %s", fromBranch)
-			return
+		cmdOut, cmdErr = utils.RunCommand(gitCheckout.Name, gitCheckout.Arguments, "")
+		if cmdErr != nil {
+			utils.LogFatal(cmdErr)
 		}
-
+		utils.LogOutput(cmdOut)
 		//now pull changes from remote
-		color.Yellow("Pulling the branch %s", fromBranch)
 		gitPull := models.AllCommands["gitPull"]
 		gitPull.Arguments = append(gitPull.Arguments, fromBranch)
-		xmd = exec.Command(gitPull.Name, gitPull.Arguments...)
-		xmd.Stdout = os.Stdout
-		xmd.Stderr = os.Stderr
-		if xmd.Run() != nil {
-			color.Red("Error in pulling the branch %s", fromBranch)
-			return
+		cmdOut, cmdErr = utils.RunCommand(gitPull.Name, gitPull.Arguments, "")
+		if cmdErr != nil {
+			utils.LogFatal(cmdErr)
 		}
-
+		utils.LogOutput(cmdOut)
 		//now checkout toBranch
-		color.Yellow("Checking out the branch %s", toBranch)
 		gitCheckout.Arguments = []string{"checkout"}
 		gitCheckout.Arguments = append(gitCheckout.Arguments, toBranch)
-		xmd = exec.Command(gitCheckout.Name, gitCheckout.Arguments...)
-		xmd.Stdout = os.Stdout
-		xmd.Stderr = os.Stderr
-		if xmd.Run() != nil {
-			color.Red("Error in checking out the branch %s", toBranch)
-			return
+		cmdOut, cmdErr = utils.RunCommand(gitCheckout.Name, gitCheckout.Arguments, "")
+		if cmdErr != nil {
+			utils.LogFatal(cmdErr)
 		}
+		utils.LogOutput(cmdOut)
 
 		//now pull changes from remote
-		color.Yellow("Pulling the branch %s", toBranch)
 		gitPull.Arguments = []string{"pull", "origin", toBranch}
-		xmd = exec.Command(gitPull.Name, gitPull.Arguments...)
-		xmd.Stdout = os.Stdout
-		xmd.Stderr = os.Stderr
-		if xmd.Run() != nil {
-			color.Red("Error in pulling the branch %s", toBranch)
-			return
+		cmdOut, cmdErr = utils.RunCommand(gitPull.Name, gitPull.Arguments, "")
+		if cmdErr != nil {
+			utils.LogFatal(cmdErr)
 		}
+		utils.LogOutput(cmdOut)
 
 		//now merge toBranch with fromBranch
-		color.Yellow("Merging the branch %s with %s", fromBranch, toBranch)
 		gitMerge := models.AllCommands["gitMerge"]
 		gitMerge.Arguments = append(gitMerge.Arguments, fromBranch)
-		xmd = exec.Command(gitMerge.Name, gitMerge.Arguments...)
-		xmd.Stdout = os.Stdout
-		xmd.Stderr = os.Stderr
-		if xmd.Run() != nil {
-			color.Red("Error in merging the branch %s with %s", fromBranch, toBranch)
-			return
-		} else {
-			color.Green("✔ Synced the branch %s with %s successfully", fromBranch, toBranch)
+		cmdOut, cmdErr = utils.RunCommand(gitMerge.Name, gitMerge.Arguments, "")
+		if cmdErr != nil {
+			utils.LogFatal(cmdErr)
 		}
+		utils.LogOutput(cmdOut)
+		utils.LogOutput("Synced branch " + fromBranch + " with " + toBranch)
 
 	},
 }

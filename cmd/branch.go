@@ -1,10 +1,8 @@
 package cmd
 
 import (
-	"os/exec"
-
-	"github.com/fatih/color"
 	"github.com/rajnandan1/okgit/models"
+	"github.com/rajnandan1/okgit/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -15,13 +13,27 @@ var branchCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		gitBranch := models.AllCommands["gitBranch"]
-		branch, err := exec.Command(gitBranch.Name, gitBranch.Arguments...).Output()
-		if err != nil {
-			color.Red("Is it a git repo? Error getting current branch")
-			return
+
+		cmdOut, cmdErr := utils.RunCommand(gitBranch.Name, gitBranch.Arguments, "")
+		if cmdErr != nil {
+			utils.LogFatal(cmdErr)
 		}
-		branch = branch[:len(branch)-1]
-		color.Green("Current branch: %s", branch)
+
+		output := cmdOut
+
+		lastCommitData := models.AllCommands["lastCommitData"]
+		cmdOut, cmdErr = utils.RunCommand(lastCommitData.Name, lastCommitData.Arguments, "")
+		if cmdErr == nil {
+			output += "\n" + cmdOut
+		}
+
+		lastCommitAuthor := models.AllCommands["lastCommitAuthor"]
+		cmdOut, cmdErr = utils.RunCommand(lastCommitAuthor.Name, lastCommitAuthor.Arguments, "")
+		if cmdErr == nil {
+			output += "\n" + cmdOut
+		}
+
+		utils.LogOutput(output)
 
 	},
 }

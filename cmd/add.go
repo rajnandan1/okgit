@@ -1,11 +1,8 @@
 package cmd
 
 import (
-	"os"
-	"os/exec"
-
-	"github.com/fatih/color"
 	"github.com/rajnandan1/okgit/models"
+	"github.com/rajnandan1/okgit/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -20,14 +17,12 @@ var addCmd = &cobra.Command{
 		}
 		gitAdd := models.AllCommands["gitAdd"]
 		gitAdd.Arguments = append(gitAdd.Arguments, args...)
-		xmd := exec.Command(gitAdd.Name, gitAdd.Arguments...)
-		xmd.Stdout = os.Stdout
-		xmd.Stderr = os.Stderr
-		if xmd.Run() == nil {
-			color.Green("✔ Staged files successfully")
-		} else {
-			color.Red("⨯ Error staging files")
+		_, cmdErr := utils.RunCommand(gitAdd.Name, gitAdd.Arguments, "")
+		if cmdErr != nil {
+			utils.LogFatal(cmdErr)
 		}
+		utils.LogOutput("Staged files successfully")
+
 	},
 }
 

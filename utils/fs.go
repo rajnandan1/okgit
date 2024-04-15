@@ -2,13 +2,17 @@ package utils
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
+	"github.com/fatih/color"
 	"github.com/rajnandan1/okgit/models"
 )
 
@@ -160,4 +164,33 @@ func ReadInput(multi bool) string {
 	input := strings.Join(lines, "\n")
 	input = strings.TrimSpace(input)
 	return input
+}
+func RunCommand(name string, args []string, stdin string) (string, error) {
+	color.HiBlue("✨" + name + " " + strings.Join(args, " "))
+	cmd := exec.Command(name, args...)
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	if stdin != "" {
+		cmd.Stdin = strings.NewReader(stdin)
+	}
+	err := cmd.Run()
+	if err != nil {
+		return strings.TrimRight(stderr.String(), "\n"), err
+	}
+	return strings.TrimRight(stdout.String(), "\n"), nil
+}
+
+func LogFatal(err error) {
+	if err != nil {
+		red := color.New(color.FgRed).SprintFunc()
+		log.Fatal(red(err.Error()))
+	}
+}
+
+func LogOutput(output string) {
+	if output != "" {
+		green := color.New(color.FgGreen).SprintFunc()
+		fmt.Println(green(output))
+	}
 }

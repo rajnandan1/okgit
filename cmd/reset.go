@@ -1,11 +1,8 @@
 package cmd
 
 import (
-	"os"
-	"os/exec"
-
-	"github.com/fatih/color"
 	"github.com/rajnandan1/okgit/models"
+	"github.com/rajnandan1/okgit/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -16,14 +13,12 @@ var resetCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		gitReset := models.AllCommands["gitReset"]
-		xmd := exec.Command(gitReset.Name, gitReset.Arguments...)
-		xmd.Stdout = os.Stdout
-		xmd.Stderr = os.Stderr
-		if xmd.Run() == nil {
-			color.Green("✔ Reset changes successfully")
-		} else {
-			color.Red("⨯ Error resetting changes")
+		cmdOut, cmdErr := utils.RunCommand(gitReset.Name, gitReset.Arguments, "")
+		if cmdErr != nil {
+			utils.LogFatal(cmdErr)
 		}
+		utils.LogOutput(cmdOut)
+
 	},
 }
 

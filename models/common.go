@@ -63,4 +63,12 @@ var AllCommands = map[string]ShellCommands{
 		Name:      "git",
 		Arguments: []string{"branch"},
 	},
+	"lastCommitData": {
+		Name:      "git",
+		Arguments: []string{"log", "-1", "--pretty=format:%h %s"},
+	},
+	"lastCommitAuthor": {
+		Name:      "git",
+		Arguments: []string{"log", "-1", "--pretty=format:%an %ad"},
+	},
 }

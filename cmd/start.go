@@ -1,12 +1,11 @@
 package cmd
 
 import (
-	"os"
-	"os/exec"
+	"errors"
 	"strings"
 
-	"github.com/fatih/color"
 	"github.com/rajnandan1/okgit/models"
+	"github.com/rajnandan1/okgit/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -17,40 +16,36 @@ var startCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if len(args) == 0 {
-			color.Red("Please provide a branch name")
-			return
+			utils.LogFatal(errors.New("Please provide the branch name to start working on"))
 		}
+
 		branch := strings.TrimSpace(args[0])
 		gitFetchBranch := models.AllCommands["gitFetchBranch"]
 		gitFetchBranch.Arguments = append(gitFetchBranch.Arguments, branch)
-		res, err := exec.Command(gitFetchBranch.Name, gitFetchBranch.Arguments...).Output()
+		res, err := utils.RunCommand(gitFetchBranch.Name, gitFetchBranch.Arguments, "")
 		if err != nil {
-			color.Red("Error fetching branches")
-			return
+			utils.LogFatal(err)
 		}
 		if len(res) == 0 {
-			// checkoutCmd.Run(cmd, args)
 			createBranch := models.AllCommands["createBranch"]
 			createBranch.Arguments = append(createBranch.Arguments, branch)
-			xmd := exec.Command(createBranch.Name, createBranch.Arguments...)
-			xmd.Stdout = os.Stdout
-			xmd.Stderr = os.Stderr
-			if xmd.Run() == nil {
-				color.Green("✔ Created new branch %s", branch)
-			} else {
-				color.Red("⨯ Error creating  new branch %s", branch)
+			cmdOut, cmdErr := utils.RunCommand(createBranch.Name, createBranch.Arguments, "")
+			if cmdErr != nil {
+				utils.LogFatal(cmdErr)
 			}
+			utils.LogOutput(cmdOut)
 		}
 
 		checkoutCmd.Run(cmd, args)
 
 		gitPull := models.AllCommands["gitPull"]
 		gitPull.Arguments = append(gitPull.Arguments, branch)
-		_, err1 := exec.Command(gitPull.Name, gitPull.Arguments...).Output()
-		if err1 == nil {
-			color.Green("✔ Pulled changes successfully")
-		}
 
+		msg, err1 := utils.RunCommand(gitPull.Name, gitPull.Arguments, "")
+		if err1 != nil {
+			utils.LogFatal(err1)
+		}
+		utils.LogOutput(msg)
 	},
 }
 

@@ -1,9 +1,7 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-	"os/exec"
+	"errors"
 	"strings"
 
 	"github.com/fatih/color"
@@ -44,17 +42,15 @@ var commitCmd = &cobra.Command{
 
 		gitBranch := models.AllCommands["gitBranch"]
 
-		branch, err := exec.Command(gitBranch.Name, gitBranch.Arguments...).Output()
-		if err != nil {
-			color.Red("Is it a git repo? Error getting current branch")
-			return
+		branch, cmdErr := utils.RunCommand(gitBranch.Name, gitBranch.Arguments, "")
+		if cmdErr != nil {
+			utils.LogFatal(cmdErr)
 		}
-		branch = branch[:len(branch)-1]
-		if storedCommit, err := utils.GetLastCommitForBranchFromFile(string(branch)); err == nil {
+		if storedCommit, err := utils.GetLastCommitForBranchFromFile(branch); err == nil {
 			myCommit = *storedCommit
 		}
 		if myCommit.Type == "" {
-			myCommit.Type = getCommitTypeFromBranchName(string(branch))
+			myCommit.Type = getCommitTypeFromBranchName(branch)
 		}
 
 		// Ask for the commit type
@@ -65,16 +61,14 @@ var commitCmd = &cobra.Command{
 
 		commitTypeInput := utils.ReadInput(false)
 		if commitTypeInput == "" && myCommit.Type == "" {
-			color.Red("Commit type is required.")
-			return
+			utils.LogFatal(errors.New("Commit type is required."))
 		}
 		if commitTypeInput != "" {
 			myCommit.Type = commitTypeInput
 		}
 
 		if !contains(commitTypes, myCommit.Type) {
-			color.Red("Invalid commit type. Please provide a valid commit type.")
-			return
+			utils.LogFatal(errors.New("Invalid commit type. Please provide a valid commit type."))
 		}
 
 		// Ask for the commit scope
@@ -102,8 +96,7 @@ var commitCmd = &cobra.Command{
 		}
 
 		if myCommit.Summary == "" {
-			color.Red("Commit summary is required.")
-			return
+			utils.LogFatal(errors.New("Commit summary is required."))
 		}
 
 		// Ask for the commit message
@@ -162,26 +155,18 @@ var commitCmd = &cobra.Command{
 
 		commit := generateCommit(myCommit)
 
-		fmt.Println("Generated commit message:")
-		fmt.Println(commit)
 		utils.CreateDirectoryAndFileIfNotExist()
-		err = utils.AddCommitToBranchFile(string(branch), myCommit)
+		err := utils.AddCommitToBranchFile(string(branch), myCommit)
 		if err != nil {
-			color.Red("Error adding commit to branch file:", err)
-			return
+			utils.LogFatal(errors.New("Error adding commit to branch file:"))
 		}
 
 		gitCommit := models.AllCommands["gitCommit"]
-		xmd := exec.Command(gitCommit.Name, gitCommit.Arguments...)
-		xmd.Stdout = os.Stdout
-		xmd.Stderr = os.Stderr
-		xmd.Stdin = strings.NewReader(commit)
-		xmderr := xmd.Run()
-		if xmderr == nil {
-			color.Green("✔ Committed changes successfully")
-		} else {
-			color.Red("⨯ Error committing changes")
+		cmdOutCommit, cmdErr := utils.RunCommand(gitCommit.Name, gitCommit.Arguments, commit)
+		if cmdErr != nil {
+			utils.LogFatal(cmdErr)
 		}
+		utils.LogOutput(cmdOutCommit)
 
 	},
 }

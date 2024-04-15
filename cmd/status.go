@@ -1,11 +1,8 @@
 package cmd
 
 import (
-	"os"
-	"os/exec"
-
-	"github.com/fatih/color"
 	"github.com/rajnandan1/okgit/models"
+	"github.com/rajnandan1/okgit/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -16,11 +13,12 @@ var statusCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		gitStatus := models.AllCommands["gitStatus"]
-		xmd := exec.Command(gitStatus.Name, gitStatus.Arguments...)
-		xmd.Stdout = os.Stdout
-		xmd.Stderr = os.Stderr
-		xmd.Run()
-		color.Yellow("Status command executed successfully")
+		cmdOut, cmdErr := utils.RunCommand(gitStatus.Name, gitStatus.Arguments, "")
+		if cmdErr != nil {
+			utils.LogFatal(cmdErr)
+		}
+		utils.LogOutput(cmdOut)
+
 	},
 }
 

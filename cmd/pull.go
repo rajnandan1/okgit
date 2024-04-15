@@ -1,11 +1,10 @@
 package cmd
 
 import (
-	"os"
-	"os/exec"
+	"errors"
 
-	"github.com/fatih/color"
 	"github.com/rajnandan1/okgit/models"
+	"github.com/rajnandan1/okgit/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -17,46 +16,37 @@ var pullCmd = &cobra.Command{
 
 		//get current branch
 		gitBracnh := models.AllCommands["gitBranch"]
-		branch, err := exec.Command(gitBracnh.Name, gitBracnh.Arguments...).Output()
+		branch, err := utils.RunCommand(gitBracnh.Name, gitBracnh.Arguments, "")
 		if err != nil {
-			branch = []byte("")
-		} else {
-			branch = branch[:len(branch)-1]
+			branch = ""
 		}
 
 		//expect the args[0] to be a branch name
 		if len(args) > 0 {
-			branch = []byte(args[0])
+			branch = args[0]
 		}
 
 		if len(branch) == 0 {
-			color.Red("Error getting branch name")
-			return
+			utils.LogFatal(errors.New("Please provide the branch name to pull changes"))
 		}
 
 		//checkout the branch
 		gitCheckout := models.AllCommands["gitCheckout"]
 		gitCheckout.Arguments = append(gitCheckout.Arguments, string(branch))
-		xmd := exec.Command(gitCheckout.Name, gitCheckout.Arguments...)
-		xmd.Stdout = os.Stdout
-		xmd.Stderr = os.Stderr
-		if xmd.Run() == nil {
-			color.Green("✔ Checked out branch successfully")
-		} else {
-			color.Red("⨯ Error checking out branch")
-			return
+		cmdOut, cmdErr := utils.RunCommand(gitCheckout.Name, gitCheckout.Arguments, "")
+		if cmdErr != nil {
+			utils.LogFatal(cmdErr)
 		}
+		utils.LogOutput(cmdOut)
 
 		gitPull := models.AllCommands["gitPull"]
 		gitPull.Arguments = append(gitPull.Arguments, string(branch))
-		xmd = exec.Command(gitPull.Name, gitPull.Arguments...)
-		xmd.Stdout = os.Stdout
-		xmd.Stderr = os.Stderr
-		if xmd.Run() == nil {
-			color.Green("✔ Pulled changes successfully")
-		} else {
-			color.Red("⨯ Error pulling changes")
+		cmdOut, cmdErr = utils.RunCommand(gitPull.Name, gitPull.Arguments, "")
+		if cmdErr != nil {
+			utils.LogFatal(cmdErr)
 		}
+		utils.LogOutput(cmdOut)
+
 	},
 }
 
