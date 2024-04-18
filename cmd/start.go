@@ -26,7 +26,19 @@ var startCmd = &cobra.Command{
 		if err != nil {
 			utils.LogFatal(err)
 		}
-		if len(res) == 0 {
+
+		splitRes := strings.Split(res, "\n")
+		branchPresent := false
+		for _, line := range splitRes {
+			trimmed := strings.TrimSpace(line)
+			trimmed = strings.TrimPrefix(trimmed, "* ")
+			if trimmed == branch {
+				branchPresent = true
+				break
+			}
+		}
+
+		if !branchPresent {
 			createBranch := models.AllCommands["createBranch"]
 			createBranch.Arguments = append(createBranch.Arguments, branch)
 			cmdOut, cmdErr := utils.RunCommand(createBranch.Name, createBranch.Arguments, "")
@@ -41,11 +53,8 @@ var startCmd = &cobra.Command{
 		gitPull := models.AllCommands["gitPull"]
 		gitPull.Arguments = append(gitPull.Arguments, branch)
 
-		msg, err1 := utils.RunCommand(gitPull.Name, gitPull.Arguments, "")
-		if err1 != nil {
-			utils.LogFatal(err1)
-		}
-		utils.LogOutput(msg)
+		utils.RunCommand(gitPull.Name, gitPull.Arguments, "")
+
 	},
 }
 

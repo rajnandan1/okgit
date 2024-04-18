@@ -12,6 +12,9 @@ var pushCmd = &cobra.Command{
 	Long:  "Push local branch changes to remote. Similar to `git push`. Example usage: okgit ps",
 	Run: func(cmd *cobra.Command, args []string) {
 
+		// do a git pull first
+		pullCmd.Run(cmd, args)
+
 		gitPush := models.AllCommands["gitPush"]
 		cmdOut, cmdErr := utils.RunCommand(gitPush.Name, gitPush.Arguments, "")
 		if cmdErr != nil {

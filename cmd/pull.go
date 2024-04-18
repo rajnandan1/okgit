@@ -41,11 +41,7 @@ var pullCmd = &cobra.Command{
 
 		gitPull := models.AllCommands["gitPull"]
 		gitPull.Arguments = append(gitPull.Arguments, string(branch))
-		cmdOut, cmdErr = utils.RunCommand(gitPull.Name, gitPull.Arguments, "")
-		if cmdErr != nil {
-			utils.LogFatal(cmdErr)
-		}
-		utils.LogOutput(cmdOut)
+		utils.RunCommand(gitPull.Name, gitPull.Arguments, "")
 
 	},
 }
