@@ -15,9 +15,21 @@ Use this tool to
 go install -v github.com/rajnandan1/okgit@latest
 ```
 
+## Initialize
+
+Run this inside a git repository 
+
+```bash
+okgit init
+```
+## Update
+
+```bash
+okgit update
+```
+
 ## Documentation
-
-
+ 
 | Command     | Description                                                             |
 |-------------|-------------------------------------------------------------------------|
 | ad          | Stage files for commit. Similar to `git add`                             |
@@ -27,6 +39,7 @@ go install -v github.com/rajnandan1/okgit@latest
 | completion  | Generate the autocompletion script for the specified shell               |
 | done        | Do add commit and push at one go                                         |
 | help        | Help about any command                                                   |
+| init        | Add .okgit/ to the .gitignore file                                        |
 | pl          | Pull remote branch changes. Similar to `git pull`                        |
 | ps          | Push local branch changes to remote. Similar to `git push`                |
 | rs          | Reset changes in the working directory. Similar to `git reset`            |

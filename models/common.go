@@ -71,4 +71,8 @@ var AllCommands = map[string]ShellCommands{
 		Name:      "git",
 		Arguments: []string{"log", "-1", "--pretty=format:%an %ad"},
 	},
+	"updateOkgit": {
+		Name:      "go",
+		Arguments: []string{"install", "-v", "github.com/rajnandan1/okgit@latest"},
+	},
 }
