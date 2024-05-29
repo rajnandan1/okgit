@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/fatih/color"
@@ -39,6 +38,11 @@ var commitCmd = &cobra.Command{
 
 		myCommit := models.Commit{}
 
+		branchFile, err := utils.StartOkgit()
+		if err != nil {
+			utils.LogFatal(err)
+		}
+
 		//Get the last commit if available
 
 		gitBranch := models.AllCommands["gitBranch"]
@@ -47,7 +51,7 @@ var commitCmd = &cobra.Command{
 		if cmdErr != nil {
 			utils.LogFatal(cmdErr)
 		}
-		if storedCommit, err := utils.GetLastCommitForBranchFromFile(branch); err == nil {
+		if storedCommit, err := utils.GetLastCommitForBranchFromFile(branch, branchFile); err == nil {
 			myCommit = *storedCommit
 		}
 		if myCommit.Type == "" {
@@ -156,19 +160,11 @@ var commitCmd = &cobra.Command{
 
 		commit := generateCommit(myCommit)
 
-		utils.CreateDirectoryAndFileIfNotExist()
-		err := utils.AddCommitToBranchFile(string(branch), myCommit)
-		if err != nil {
-			utils.LogFatal(errors.New("Error adding commit to branch file:"))
+		// utils.CreateDirectoryAndFileIfNotExist()
+		errWr := utils.AddCommitToBranchFile(string(branch), myCommit, branchFile)
+		if errWr != nil {
+			utils.LogFatal(errWr)
 		}
-		fmt.Println("--------------")
-		fmt.Println("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
-		fmt.Println("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
-		fmt.Println("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
-		fmt.Println("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
-		fmt.Println("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
-		fmt.Println("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
-		fmt.Println("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
 		gitCommit := models.AllCommands["gitCommit"]
 		cmdOutCommit, cmdErr := utils.RunCommand(gitCommit.Name, gitCommit.Arguments, commit)
 		if cmdErr != nil {

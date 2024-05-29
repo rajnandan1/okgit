@@ -75,4 +75,8 @@ var AllCommands = map[string]ShellCommands{
 		Name:      "go",
 		Arguments: []string{"install", "-v", "github.com/rajnandan1/okgit@latest"},
 	},
+	"remoteOriginUrl": {
+		Name:      "git",
+		Arguments: []string{"config", "--get", "remote.origin.url"},
+	},
 }
