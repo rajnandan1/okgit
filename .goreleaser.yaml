@@ -21,7 +21,7 @@ brews:
   -
     name: okgit
     homepage: "https://github.com/rajnandan1/okgit"
-    tap:
+    repository:
       owner: rajnandan1
       name: homebrew-rajnandan
     commit_author:
