@@ -12,20 +12,15 @@ Use this tool to
 ## Install
 
 ```bash
-go install -v github.com/rajnandan1/okgit@latest
+brew tap rajnandan1/homebrew-rajnandan
+brew install okgit 
 ```
 
-## Initialize
 
-Run this inside a git repository 
-
-```bash
-okgit init
-```
 ## Update
 
 ```bash
-okgit update
+brew upgrade okgit
 ```
 
 ## Documentation
@@ -53,15 +48,10 @@ okgit update
 okgit --help
 ```
 
-## Setup
-Update you `.gitignore` file to ignore the `.okgit` directory.
 
-```
-echo ".okgit/" >> .gitignore
-```
-
-## Run locally without install
+## Development
 
 ```bash
+mkdir bin
 go build -o bin ./... &&  ./bin/okgit cm
 ```
