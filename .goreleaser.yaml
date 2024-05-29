@@ -1,11 +1,32 @@
-# .goreleaser.yml
 builds:
-  - env:
-      - CGO_ENABLED=0
+  - binary: okgit
     goos:
-      - linux
       - darwin
-      - windows
+      - linux
     goarch:
       - amd64
-    binary: bin/okgit
+      - arm64
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -mod=vendor
+
+release:
+  prerelease: auto
+
+universal_binaries:
+  - replace: true
+
+brews:
+  -
+    name: okgit
+    homepage: "https://github.com/rajnandan1/okgit"
+    tap:
+      owner: rajnandan1
+      name: homebrew-rajnandan
+    commit_author:
+      name: rajnandan1
+      email: rajnandan1@gmail.com
+
+checksum:
+  name_template: 'checksums.txt'
