@@ -24,6 +24,29 @@ brew update
 brew upgrade okgit
 ```
 
+## Conventional Commits
+
+Read about conventional commits [here](https://www.conventionalcommits.org)
+
+```bash
+okgit cm
+```
+Output 
+
+```bash
+[Required] Type (feat, fix, docs, build, chore, ci, docs, style, refactor, perf, test, others): # select what kind commit this is
+[Optional] Scope: # enter the scope of the commit
+[Required] Summary: 
+# enter the summary of the commit
+[Optional] Details: 
+# enter other optional details of the commit, like author, issue number, JIRA ID etc
+[Required] Breaking change? (y/n): # if this commit introduces a breaking change
+[Optional] What is breaking? 
+# enter what is breaking in the commit
+[Optional] Footer: 
+# enter the footer of the commit
+```
+
 ## Documentation
  
 | Command     | Description                                                             |
