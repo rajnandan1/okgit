@@ -20,6 +20,7 @@ brew install okgit
 ## Update
 
 ```bash
+brew update
 brew upgrade okgit
 ```
 
