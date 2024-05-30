@@ -174,6 +174,12 @@ func LogFatal(err error) {
 		log.Fatal(red(err.Error()))
 	}
 }
+func LogNonFatal(err error) {
+	if err != nil {
+		red := color.New(color.FgRed).SprintFunc()
+		log.Print(red(err.Error()))
+	}
+}
 
 func LogOutput(output string) {
 	if output != "" {

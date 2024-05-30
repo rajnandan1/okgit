@@ -43,9 +43,10 @@ var pullCmd = &cobra.Command{
 		gitPull.Arguments = append(gitPull.Arguments, string(branch))
 		cmdOut, cmdErr = utils.RunCommand(gitPull.Name, gitPull.Arguments, "")
 		if cmdErr != nil {
-			utils.LogFatal(cmdErr)
+			utils.LogNonFatal(cmdErr)
+		} else {
+			utils.LogOutput(cmdOut)
 		}
-		utils.LogOutput(cmdOut)
 
 	},
 }
